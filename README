@@ -1,0 +1,21 @@
+This repo contains source of docker image used to perform
+QUIC interoperability tests.
+
+The testsuite is [1], base image with network simulator is [2], and
+results can be seen at [3].
+
+The files:
+
+    + Dockerfile       - describes how to build nginx quic
+                         implementation [4] from sources
+    + mkcert.sh        - script to generate certificates used by server
+    + nginx.conf       - default server configuration, HTTP/0.9 over quic
+    + nginx.conf.retry - same configuration, with retry enabled
+    + nginx.conf.http3 - configuration with HTTP/3 over quic
+    + README           - this file
+    + run_endpoint.sh  - script to run testsuite, see [1] and [2] for details
+
+[1] https://github.com/marten-seemann/quic-interop-runner
+[2] https://github.com/marten-seemann/quic-network-simulator
+[3] https://interop.seemann.io
+[4] https://quic.nginx.org
