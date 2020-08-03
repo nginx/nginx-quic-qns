@@ -1,5 +1,7 @@
 daemon off;
 
+user root;
+
 error_log /dev/stdout debug;
 
 events {
