@@ -49,7 +49,7 @@ RUN cd nginx-quic && \
     --with-http_quic_module \
     --with-stream_quic_module \
     --with-http_v3_module \
-    --with-cc-opt='-I/boringssl/include -O0 -fno-common -fno-omit-frame-pointer -DNGX_DEBUG_MALLOC -DNGX_DEBUG_PALLOC -DNGX_QUIC_DRAFT_VERSION=29 -DNGX_QUIC_DEBUG_PACKETS -DNGX_QUIC_DEBUG_FRAMES -DNGX_QUIC_DEBUG_FRAMES_ALLOC -DNGX_QUIC_DEBUG_CRYPTO' \
+    --with-cc-opt='-I/boringssl/include -O0 -fno-common -fno-omit-frame-pointer -DNGX_QUIC_DRAFT_VERSION=29' \
     --with-ld-opt='-L/boringssl/build/ssl -L/boringssl/build/crypto'
 
 RUN cd nginx-quic && make -j$(nproc)
