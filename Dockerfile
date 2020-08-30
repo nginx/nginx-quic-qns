@@ -66,8 +66,6 @@ COPY nginx.conf /etc/nginx/nginx.conf
 COPY nginx.conf.retry /etc/nginx/nginx.conf.retry
 COPY nginx.conf.http3 /etc/nginx/nginx.conf.http3
 
-RUN dd if=/dev/zero of=/etc/nginx/html/1000000 bs=1000000 count=1
-
 COPY run_endpoint.sh .
 RUN chmod +x run_endpoint.sh
 
