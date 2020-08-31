@@ -1,10 +1,8 @@
-FROM martenseemann/quic-network-simulator-endpoint:latest
+FROM martenseemann/quic-network-simulator-endpoint:latest AS builder
 
 ARG DEBIAN_FRONTEND=noninteractive
-RUN apt update
-RUN apt-get install -qy mercurial build-essential libpcre3 libpcre3-dev zlib1g zlib1g-dev curl git cmake ninja-build golang
-RUN apt-get install -qy gnutls-bin
-RUN apt-get install -qy iptables
+RUN apt-get update
+RUN apt-get install -qy mercurial build-essential libpcre3 libpcre3-dev zlib1g zlib1g-dev curl git cmake ninja-build golang gnutls-bin iptables
 
 RUN useradd nginx
 
@@ -55,18 +53,20 @@ RUN cd nginx-quic && \
 RUN cd nginx-quic && make -j$(nproc)
 RUN cd nginx-quic && make install
 
-RUN mkdir -p /var/cache/nginx
-RUN mkdir -p /var/log/nginx/
+
+FROM martenseemann/quic-network-simulator-endpoint:latest
+
+COPY --from=builder /usr/sbin/nginx /usr/sbin/
+COPY --from=builder /etc/nginx /etc/nginx
+
+RUN useradd nginx
+RUN mkdir -p /var/cache/nginx /var/log/nginx/
 
 COPY mkcert.sh /etc/nginx/mkcert.sh
 RUN chmod +x /etc/nginx/mkcert.sh
 RUN cd /etc/nginx && ./mkcert.sh localhost
 
-COPY nginx.conf /etc/nginx/nginx.conf
-COPY nginx.conf.retry /etc/nginx/nginx.conf.retry
-COPY nginx.conf.http3 /etc/nginx/nginx.conf.http3
-
-RUN dd if=/dev/zero of=/etc/nginx/html/1000000 bs=1000000 count=1
+COPY nginx.conf nginx.conf.retry nginx.conf.http3 /etc/nginx/
 
 COPY run_endpoint.sh .
 RUN chmod +x run_endpoint.sh
