@@ -26,6 +26,7 @@ RUN hg clone http://hg.nginx.org/nginx-quic && cd nginx-quic && hg update 'quic'
 
 RUN cd nginx-quic && \
     ./auto/configure --prefix=/etc/nginx \
+    --build=$(hg tip | head -n 1 | awk '{ print $2 }') \
     --sbin-path=/usr/sbin/nginx \
     --modules-path=/usr/lib/nginx/modules \
     --conf-path=/etc/nginx/nginx.conf \

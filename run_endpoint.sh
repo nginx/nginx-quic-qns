@@ -32,6 +32,7 @@ if [ "$ROLE" == "client" ]; then
 
 elif [ "$ROLE" == "server" ]; then
     echo ">>> Starting nginx server..."
+    /usr/sbin/nginx -V
     echo ">>> Parameters: $SERVER_PARAMS"
     echo ">>> Test case: $TESTCASE"
 
