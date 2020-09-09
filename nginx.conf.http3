@@ -20,6 +20,8 @@ http {
     ssl_early_data on;
     ssl_session_tickets on;
 
+    quic_initial_max_streams_bidi 100;
+
     server {
         server_name localhost;
         listen *:443 ssl;
