@@ -63,10 +63,6 @@ COPY --from=builder /etc/nginx /etc/nginx
 RUN useradd nginx
 RUN mkdir -p /var/cache/nginx /var/log/nginx/
 
-COPY mkcert.sh /etc/nginx/mkcert.sh
-RUN chmod +x /etc/nginx/mkcert.sh
-RUN cd /etc/nginx && ./mkcert.sh localhost
-
 COPY nginx.conf nginx.conf.retry nginx.conf.http3 /etc/nginx/
 
 COPY run_endpoint.sh .

@@ -11,8 +11,8 @@ events {
 http {
     access_log /dev/stdout;
 
-    ssl_certificate     localhost.crt;
-    ssl_certificate_key localhost.key;
+    ssl_certificate     /certs/cert.pem;
+    ssl_certificate_key /certs/priv.key;
 
     # quic requires TLS 1.3
     ssl_protocols TLSv1.2 TLSv1.3;
