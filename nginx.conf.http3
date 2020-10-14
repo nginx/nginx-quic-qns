@@ -26,6 +26,8 @@ http {
         server_name localhost;
         listen *:443 ssl;
         listen *:443 reuseport http3;
+        listen [::]:443 ssl;
+        listen [::]:443 reuseport http3;
         add_header Alt-Svc 'h3-29=":443"';
         location / {
             root /www;
