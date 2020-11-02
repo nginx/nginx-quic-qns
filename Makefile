@@ -4,7 +4,7 @@ default:
 	@echo "valid targets: build push"
 
 build:
-	docker build --no-cache -t nginx/nginx-quic-qns:latest -f Dockerfile .
+	docker build --pull --no-cache -t nginx/nginx-quic-qns:latest -f Dockerfile .
 
 push:
 	docker push nginx/nginx-quic-qns:latest
