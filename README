@@ -8,7 +8,6 @@ The files:
 
     + Dockerfile       - describes how to build nginx quic
                          implementation [4] from sources
-    + mkcert.sh        - script to generate certificates used by server
     + nginx.conf       - default server configuration, HTTP/0.9 over quic
     + nginx.conf.retry - same configuration, with retry enabled
     + nginx.conf.http3 - configuration with HTTP/3 over quic
