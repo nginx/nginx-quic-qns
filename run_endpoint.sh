@@ -45,6 +45,9 @@ elif [ "$ROLE" == "server" ]; then
         "http3")
             /usr/sbin/nginx -c /etc/nginx/nginx.conf.http3
         ;;
+        "transfer")
+            /usr/sbin/nginx -c /etc/nginx/nginx.conf.nodebug
+        ;;
         *)
             /usr/sbin/nginx -c /etc/nginx/nginx.conf
         ;;
