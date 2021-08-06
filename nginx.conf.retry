@@ -22,6 +22,8 @@ http {
 
     quic_initial_max_streams_bidi 100;
 
+    keepalive_requests 5000;
+
     server {
         server_name localhost;
         listen *:443 ssl;
