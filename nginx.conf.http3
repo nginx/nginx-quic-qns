@@ -20,16 +20,14 @@ http {
     ssl_early_data on;
     ssl_session_tickets on;
 
-    quic_initial_max_streams_bidi 100;
-
     keepalive_requests 5000;
 
     server {
         server_name localhost;
         listen *:443 ssl;
-        listen *:443 reuseport http3;
+        listen *:443 http3 reuseport;
         listen [::]:443 ssl;
-        listen [::]:443 reuseport http3;
+        listen [::]:443 http3 reuseport;
         add_header Alt-Svc 'h3-29=":443"';
         location / {
             root /www;
