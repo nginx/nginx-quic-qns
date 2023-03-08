@@ -1,4 +1,4 @@
-FROM martenseemann/quic-network-simulator-endpoint:latest AS builder
+FROM ubuntu:latest AS builder
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update
