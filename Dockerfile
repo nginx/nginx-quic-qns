@@ -2,9 +2,12 @@ FROM martenseemann/quic-network-simulator-endpoint:latest AS builder
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update
-RUN apt-get install -qy mercurial build-essential libpcre3 libpcre3-dev zlib1g zlib1g-dev curl git cmake ninja-build golang gnutls-bin iptables
+RUN apt-get install -qy mercurial build-essential libpcre3 libpcre3-dev zlib1g zlib1g-dev curl git cmake ninja-build gnutls-bin iptables
 
 RUN useradd nginx
+
+COPY --from=golang:latest /usr/local/go/ /usr/local/go/
+ENV PATH="/usr/local/go/bin:${PATH}"
 
 RUN git clone --depth=1 https://github.com/google/boringssl.git
 
