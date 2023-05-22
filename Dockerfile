@@ -25,9 +25,9 @@ RUN  cd boringssl  && \
 
 RUN touch 'boringssl/.openssl/include/openssl/ssl.h'
 
-RUN hg clone http://hg.nginx.org/nginx-quic && cd nginx-quic && hg update 'quic'
+RUN hg clone http://hg.nginx.org/nginx
 
-RUN cd nginx-quic && \
+RUN cd nginx && \
     ./auto/configure --prefix=/etc/nginx \
     --build=$(hg tip | head -n 1 | awk '{ print $2 }') \
     --sbin-path=/usr/sbin/nginx \
@@ -48,13 +48,12 @@ RUN cd nginx-quic && \
     --with-debug \
     --with-http_ssl_module \
     --with-http_v2_module \
-    --with-stream_quic_module \
     --with-http_v3_module \
     --with-cc-opt='-I/boringssl/include -O0 -fno-common -fno-omit-frame-pointer -DNGX_QUIC_DRAFT_VERSION=29 -DNGX_HTTP_V3_HQ=1' \
     --with-ld-opt='-L/boringssl/build/ssl -L/boringssl/build/crypto'
 
-RUN cd nginx-quic && make -j$(nproc)
-RUN cd nginx-quic && make install
+RUN cd nginx && make -j$(nproc)
+RUN cd nginx && make install
 
 
 FROM martenseemann/quic-network-simulator-endpoint:latest
