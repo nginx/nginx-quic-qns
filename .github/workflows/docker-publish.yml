@@ -1,0 +1,63 @@
+name: Docker Build and Push
+
+on:
+  schedule:
+    - cron: '13 13 * * *'
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get latest commit ID from nginx/nginx
+        run: |
+          LATEST_COMMIT=$(curl -s https://api.github.com/repos/nginx/nginx/commits/master | jq -r '.sha')
+          echo "commit_id=$LATEST_COMMIT" >> $GITHUB_ENV
+
+      - name: Install Skopeo
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y skopeo
+
+      - name: Get the commit ID tag of the latest image with Skopeo
+        run: |
+          LATEST_IMAGE_COMMIT=$(skopeo inspect docker://ghcr.io/nginx/nginx-quic-qns:latest | jq -r '.Labels.commit_id' || echo "none")
+          echo "latest_image_commit=$LATEST_IMAGE_COMMIT" >> $GITHUB_ENV
+
+      - name: Compare commit IDs
+        run: |
+          if [ "${{ env.commit_id }}" != "${{ env.latest_image_commit }}" ]; then
+            echo "Commit IDs are different. Triggering build."
+            echo "trigger_build=true" >> $GITHUB_ENV
+          else
+            echo "Commit IDs are the same. No build needed."
+            echo "trigger_build=false" >> $GITHUB_ENV
+          fi
+
+      - name: Login to GitHub Container Registry
+        if: env.trigger_build == 'true'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Build and Push Docker Image
+        if: env.trigger_build == 'true'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: |
+            ghcr.io/nginx/nginx-quic-qns:latest
+            ghcr.io/nginx/nginx-quic-qns:${{ env.commit_id }}
+          labels: |
+            commit_id=${{ env.commit_id }}
