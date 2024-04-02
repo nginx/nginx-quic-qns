@@ -49,7 +49,8 @@ RUN cd nginx && \
     --with-http_ssl_module \
     --with-http_v2_module \
     --with-http_v3_module \
-    --with-cc-opt='-I/boringssl/include -O0 -fno-common -fno-omit-frame-pointer -DNGX_QUIC_DRAFT_VERSION=29 -DNGX_HTTP_V3_HQ=1' \
+    --with-cc=c++ \
+    --with-cc-opt='-I/boringssl/include -O0 -fno-common -fno-omit-frame-pointer -DNGX_QUIC_DRAFT_VERSION=29 -DNGX_HTTP_V3_HQ=1 -x c' \
     --with-ld-opt='-L/boringssl/build/ssl -L/boringssl/build/crypto'
 
 RUN cd nginx && make -j$(nproc)
