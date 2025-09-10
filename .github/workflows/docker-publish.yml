@@ -11,10 +11,17 @@ on:
 
 env:
   push_build: false
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
@@ -31,7 +38,7 @@ jobs:
 
       - name: Get the commit ID tag of the latest image with Skopeo
         run: |
-          LATEST_IMAGE_COMMIT=$(skopeo inspect docker://ghcr.io/nginx/nginx-quic-qns:latest | jq -r '.Labels.commit_id' || echo "none")
+          LATEST_IMAGE_COMMIT=$(skopeo inspect docker://${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest | jq -r '.Labels.commit_id' || echo "none")
           echo "latest_image_commit=$LATEST_IMAGE_COMMIT" >> $GITHUB_ENV
 
       - name: Compare commit IDs
@@ -53,9 +60,9 @@ jobs:
         if: env.push_build == 'true'
         uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 # v3.5.0
         with:
-          registry: ghcr.io
+          registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
-          password: ${{ secrets.DOCKER_TOKEN }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and Push Docker Image
         if: env.trigger_build == 'true'
@@ -65,7 +72,7 @@ jobs:
           file: Dockerfile
           push: ${{ env.push_build }}
           tags: |
-            ghcr.io/nginx/nginx-quic-qns:latest
-            ghcr.io/nginx/nginx-quic-qns:${{ env.commit_id }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.commit_id }}
           labels: |
             commit_id=${{ env.commit_id }}
