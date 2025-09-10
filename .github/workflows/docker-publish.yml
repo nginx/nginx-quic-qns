@@ -9,6 +9,9 @@ on:
     branches: [ "master" ]
   workflow_dispatch:
 
+env:
+  push_build: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -41,8 +44,13 @@ jobs:
             echo "trigger_build=false" >> $GITHUB_ENV
           fi
 
+      - name: Decide if we want to push the container
+        if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+        run: |
+          echo "push_build=true" >> $GITHUB_ENV
+
       - name: Login to GitHub Container Registry
-        if: env.trigger_build == 'true'
+        if: env.push_build == 'true'
         uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 # v3.5.0
         with:
           registry: ghcr.io
@@ -55,7 +63,7 @@ jobs:
         with:
           context: .
           file: Dockerfile
-          push: true
+          push: ${{ env.push_build }}
           tags: |
             ghcr.io/nginx/nginx-quic-qns:latest
             ghcr.io/nginx/nginx-quic-qns:${{ env.commit_id }}
