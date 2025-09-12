@@ -31,7 +31,7 @@ http {
 
         http3_hq on;
 
-        add_header Alt-Svc 'hq-29=":443"';
+        add_header Alt-Svc 'h3=":443"; ma=86400';
         location / {
             root /www;
         }
