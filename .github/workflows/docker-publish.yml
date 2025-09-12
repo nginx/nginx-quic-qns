@@ -11,6 +11,7 @@ on:
 
 env:
   push_build: false
+  trigger_build: false
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
@@ -45,6 +46,9 @@ jobs:
         run: |
           if [ "${{ env.commit_id }}" != "${{ env.latest_image_commit }}" ]; then
             echo "Commit IDs are different. Triggering build."
+            echo "trigger_build=true" >> $GITHUB_ENV
+          elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "Running under workflow_dispatch. Triggering build."
             echo "trigger_build=true" >> $GITHUB_ENV
           else
             echo "Commit IDs are the same. No build needed."
