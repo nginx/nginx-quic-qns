@@ -2,7 +2,7 @@ FROM martenseemann/quic-network-simulator-endpoint:latest AS builder
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update
-RUN apt-get install -qy build-essential libpcre3 libpcre3-dev zlib1g zlib1g-dev curl git cmake ninja-build gnutls-bin iptables
+RUN apt-get install -qy build-essential libpcre2-dev zlib1g zlib1g-dev curl git cmake ninja-build gnutls-bin iptables
 
 RUN useradd nginx
 
