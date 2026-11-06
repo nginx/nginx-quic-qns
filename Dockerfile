@@ -10,7 +10,10 @@ RUN useradd nginx
 RUN curl -fsSL https://github.com/openssl/openssl/releases/download/openssl-$OPENSSL_VERSION/openssl-$OPENSSL_VERSION.tar.gz \
     | tar -xz
 
-RUN git clone https://github.com/nginx/nginx
+ARG NGINX_COMMIT=master
+RUN git init nginx && \
+    git -C nginx fetch --depth=1 https://github.com/nginx/nginx $NGINX_COMMIT && \
+    git -C nginx checkout FETCH_HEAD
 
 RUN cd nginx && \
     ./auto/configure --prefix=/etc/nginx \

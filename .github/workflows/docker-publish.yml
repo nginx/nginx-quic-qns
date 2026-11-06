@@ -29,7 +29,8 @@ jobs:
 
       - name: Get latest commit ID from nginx/nginx
         run: |
-          LATEST_COMMIT=$(curl -s https://api.github.com/repos/nginx/nginx/commits/master | jq -r '.sha')
+          LATEST_COMMIT=$(git ls-remote https://github.com/nginx/nginx.git refs/heads/master | cut -f1)
+          [ -n "$LATEST_COMMIT" ] || exit 1
           echo "commit_id=$LATEST_COMMIT" >> $GITHUB_ENV
 
       - name: Install Skopeo
@@ -74,6 +75,8 @@ jobs:
         with:
           context: .
           file: Dockerfile
+          build-args: |
+            NGINX_COMMIT=${{ env.commit_id }}
           push: ${{ env.push_build }}
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
