@@ -36,8 +36,6 @@ elif [ "$ROLE" == "server" ]; then
     echo ">>> Parameters: $SERVER_PARAMS"
     echo ">>> Test case: $TESTCASE"
 
-    export LD_LIBRARY_PATH=boringssl/build/ssl:boringssl/build/crypto
-
     case "$TESTCASE" in
         "retry")
             /usr/sbin/nginx -c /etc/nginx/nginx.conf.retry

@@ -1,31 +1,19 @@
 FROM martenseemann/quic-network-simulator-endpoint:latest AS builder
 
 ARG DEBIAN_FRONTEND=noninteractive
+ARG OPENSSL_VERSION=3.5.9
 RUN apt-get update
-RUN apt-get install -qy build-essential libpcre2-dev zlib1g zlib1g-dev curl git cmake ninja-build gnutls-bin iptables
+RUN apt-get install -qy build-essential libpcre2-dev zlib1g zlib1g-dev curl git perl gnutls-bin iptables
 
 RUN useradd nginx
 
-COPY --from=golang:latest /usr/local/go/ /usr/local/go/
-ENV PATH="/usr/local/go/bin:${PATH}"
+RUN curl -fsSL https://github.com/openssl/openssl/releases/download/openssl-$OPENSSL_VERSION/openssl-$OPENSSL_VERSION.tar.gz \
+    | tar -xz
 
-RUN git clone --depth=1 https://github.com/google/boringssl.git
-
-RUN  cd boringssl  && \
-  mkdir build && \
-  cd build && \
-  cmake -GNinja .. && \
-  ninja && \
-  cd ../.. && \
-  mkdir -p boringssl/.openssl/lib && \
-  cp boringssl/build/libcrypto.a boringssl/build/libssl.a boringssl/.openssl/lib && \
-  cd boringssl/.openssl && \
-  ln -s ../include . && \
-  cd ../..
-
-RUN touch 'boringssl/.openssl/include/openssl/ssl.h'
-
-RUN git clone https://github.com/nginx/nginx
+ARG NGINX_COMMIT=master
+RUN git init nginx && \
+    git -C nginx fetch --depth=1 https://github.com/nginx/nginx $NGINX_COMMIT && \
+    git -C nginx checkout FETCH_HEAD
 
 RUN cd nginx && \
     ./auto/configure --prefix=/etc/nginx \
@@ -49,9 +37,8 @@ RUN cd nginx && \
     --with-http_ssl_module \
     --with-http_v2_module \
     --with-http_v3_module \
-    --with-cc=c++ \
-    --with-cc-opt='-I/boringssl/include -O0 -fno-common -fno-omit-frame-pointer -x c' \
-    --with-ld-opt='-L/boringssl/build'
+    --with-openssl=/openssl-$OPENSSL_VERSION \
+    --with-cc-opt='-O0 -fno-common -fno-omit-frame-pointer'
 
 RUN cd nginx && make -j$(nproc)
 RUN cd nginx && make install
